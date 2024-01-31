@@ -6,12 +6,26 @@ import {
   Spinner,
   Typography,
 } from "@material-tailwind/react";
-import React from "react";
 import useAxios from "./hooks/useAxios";
+import { useDispatch } from "react-redux";
+import {
+  handleCategory,
+  handleDifficulty,
+  handleNumOfQuestions,
+  handleType,
+} from "../redux/actions";
+import { useNavigate } from "react-router-dom";
 
 const SelectInput = () => {
   const { res, error, loading } = useAxios({ url: "/api_category.php" });
-  const diffcultyOptions = [
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleStart = () => {
+    navigate("/quiz");
+  };
+
+  const difficultyOptions = [
     { id: 1, name: "Easy" },
     { id: 2, name: "Medium" },
     { id: 3, name: "Hard" },
@@ -20,6 +34,7 @@ const SelectInput = () => {
     { id: 1, name: "Multiple Choice" },
     { id: 2, name: "True/false" },
   ];
+
   return (
     <>
       {error && (
@@ -27,36 +42,68 @@ const SelectInput = () => {
           Something went wrong!
         </Typography>
       )}
-      {loading && <Spinner />}
-      {res && (
+      {loading && <Spinner className="mt-16" />}
+      {res && res.trivia_categories && (
         <>
-          {
-            <div className="w-96 mt-6">
-              <Select label="Select Category">
-                {res.trivia_categories?.map((r) => (
-                  <Option key={r.id}>{r.name}</Option>
-                ))}
-              </Select>
-            </div>
-          }
           <div className="w-96 mt-6">
-            <Select label="Select Difficulty">
-              {diffcultyOptions.map((diff) => (
-                <Option key={diff.id}>{diff.name}</Option>
+            <Select
+              label="Select Category"
+              onChange={(e) => {
+                console.log("Event:", e); // Debugging statement
+                dispatch(handleCategory(e));
+              }}
+            >
+              {res.trivia_categories?.map((r) => (
+                <Option key={r.id} value={r.name}>
+                  {r.name}
+                </Option>
               ))}
             </Select>
           </div>
           <div className="w-96 mt-6">
-            <Select label="Select Type">
+            <Select
+              label="Select Difficulty"
+              onChange={(e) => {
+                console.log("Event:", e); // Debugging statement
+                dispatch(handleDifficulty(e));
+              }}
+            >
+              {difficultyOptions.map((diff) => (
+                <Option key={diff.id} value={diff.name}>
+                  {diff.name}
+                </Option>
+              ))}
+            </Select>
+          </div>
+          <div className="w-96 mt-6">
+            <Select
+              label="Select Type"
+              onChange={(e) => {
+                console.log("Event:", e); // Debugging statement
+                dispatch(handleType(e));
+                //}
+              }}
+            >
               {typeOptions.map((type) => (
-                <Option key={type.id}>{type.name}</Option>
+                <Option key={type.id} value={type.name}>
+                  {type.name}
+                </Option>
               ))}
             </Select>
           </div>
           <div className="w-96 mt-6">
-            <Input type="number" label="Amount of Questions" />
+            <Input
+              type="number"
+              label="Amount of Questions"
+              onChange={(e) => dispatch(handleNumOfQuestions(e.target.value))}
+            />
           </div>
-          <Button type="submit" className="w-96 mt-6" ripple={true}>
+          <Button
+            type="button"
+            className="w-96 mt-6"
+            ripple={true}
+            onClick={handleStart}
+          >
             Get Started
           </Button>
         </>

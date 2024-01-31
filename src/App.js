@@ -1,7 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
-import Quiz from "./components/Quiz";
+import {Quiz} from "./components/Quiz";
 import Score from "./components/Score";
 function App() {
   return (
